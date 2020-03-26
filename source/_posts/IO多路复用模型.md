@@ -54,6 +54,50 @@ IO多路复用的设计遵循以下几点
 
 # 零拷贝
 
+#### mmap + write
+
+netty提供的内存映射buffer：MappedByteBuffer
+
+- JavaNIO中的Channel就相当于操作系统中的内核缓冲区，有可能是读缓冲区，也有可能是网络缓冲区，而Buffer就相当于操作系统中的用户缓冲区
+
+- 底层通过调用linux的mmap实现，NIO中FileChannel.map就是采用了操作系统中的内存映射方式，底层调用mmap实现
+
+#### sendfile
+
+JavaNIO提供的sendFile
+
+- FileChannel.transferTo方法直接将当前通道内容传输到另一个通道，没有涉及到Buffer的操作，NIO中Buffer是JVM堆或堆外内存，但无论如何他们都是操作系统内核空间的内存
+
+- transferTo的实现方式就是通过调用sendfile
+
+- JAVA NIO提供的零拷贝并不能保证一定能使用零拷贝，实际中与操作系统有关
+
+Netty中的零拷贝完全是在用户态的，这个零拷贝更偏向于优化数据操作这样的概念。
+
+#### 虚拟内存
+
+- 所有现代操作系统都使用虚拟内存，使用虚拟内存地址取代物理地址，好处如下
+  
+  - 一个以上的虚拟空间地址可以指向同一个物理内存地址
+  
+  - 虚拟内存空间可大于实际可用的物理地址
+  
+  利用第一条特性，可以把内核空间地址和用户空间的虚拟地址映射到同一个同时可对内核和用户可见的缓冲区了
+
 # Reactor模式
+
+- 单线程模型
+  
+  - Reactor线程负责多路分离套接字，有新的connect事件后交由acceptor处理，有io读写事件后交由handler处理，handler与事件的绑定由acceptor完成
+
+- 多线程模型
+  
+  - 获取到IO读写事件后，交由线程池来处理，这样可以减少Reactor的性能开销，从而更加专注于事件分发工作了，从整体上提高整个应用的吞吐
+
+- 主从多线程模型
+  
+  - mainReactor负责监听serverSocket，专门用来处理新连接的建立，将新建立的socketChannel指定注册给subReactor
+  
+  - subReactor维护自己的selector，基于mainReactor注册的socketChannel多路分离IO读写事件，读写网络数据，对业务处理的功能，另其仍给工作线程完成
 
 # Proactor模式
