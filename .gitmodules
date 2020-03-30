@@ -1,0 +1,3 @@
+[submodule "Butterfly"]	#子模块名称
+    path = themes/Butterfly		#存放子模块的地址
+    url = git@github.com:jerryc127/hexo-theme-butterfly.git  #子模块的原始路径
