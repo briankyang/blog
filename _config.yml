@@ -6,7 +6,7 @@
 title: Future
 subtitle:
 description:
-author: Kang
+author: icoding
 language: zh-CN
 timezone: Asia/Shanghai
 
@@ -63,7 +63,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: yilia
+theme: Butterfly
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
@@ -91,3 +91,5 @@ jsonContent:
 		excerpt: false
 		categories: false
 		tags: true
+
+index_top_img_height: 50vh
